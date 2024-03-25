@@ -1,0 +1,50 @@
+version: "3"
+services:
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    links:
+      - mysql
+    restart: unless-stopped
+    environment:
+      PMA_HOST: some-mysql
+      PMA_PORT: 3307
+      PMA_ARBITRARY: 1
+    ports:
+      - 8081:80
+    networks:
+      - prestashop_network
+  mysql:
+    container_name: some-mysql
+    image: mysql:8.3
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: prestashop
+    ports:
+      - 3307:3307
+    networks:
+      - prestashop_network
+  prestashop:
+    container_name: prestashop
+    image: prestashop/prestashop:latest # Latest stable version of the PrestaShop, to see all available images go to ...
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    ports:
+      - 8080:80
+    environment:
+      DB_SERVER: some-mysql
+      DB_NAME: prestashop
+      DB_USER: root
+      DB_PASSWD: admin
+      PS_INSTALL_AUTO: 1
+      PS_DOMAIN: localhost:8080
+      PS_FOLDER_ADMIN: adminMinhHuy
+      ADMIN_MAIL: huy09842@gmail.com
+      ADMIN_PASSWD: Minhhuy123@
+      #PS_INSTALL_AUTO: 1
+    networks:
+      - prestashop_network
+networks:
+  prestashop_network:
